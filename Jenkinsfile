@@ -1,32 +1,18 @@
 pipeline {
     agent { label 'docker-agent' }
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Building..'
-                sh 'java -version' 
-            }
-        }
-        stage('Test') {
-            when {
-                branch 'main' // This stage ONLY runs if we are on the main branch
-            }
-            steps {
-                echo 'Running tests on the main branch...'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
-            }
-        }
+    tools {
+        maven 'maven-3.9' // Tells Jenkins to download and provide Maven to the Agent
     }
-    post {
-        always {
-            echo 'I run regardless of success or failure (good for cleanup).'
-        }
-        success {
-            echo 'The build passed! Moving to the next step.'
+    environment {
+        APP_NAME = 'MyJavaApp'
+        VERSION = '1.1.0'
+    }
+    stages {
+        stage('Initialize') {
+            steps {
+                echo "Starting build for ${env.APP_NAME} version ${env.VERSION}"
+                sh 'mvn --version' // Verifies Maven was installed by Jenkins
+            }
         }
     }
 }
