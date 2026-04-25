@@ -1,17 +1,27 @@
 pipeline {
     agent { label 'docker-agent' }
-    tools {
-        maven 'maven-3.9' // Tells Jenkins to download and provide Maven to the Agent
+    
+    parameters {
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Check this box to run the Test stage')
     }
-    environment {
-        APP_NAME = 'MyJavaApp'
-        VERSION = '1.1.0'
-    }
+    
     stages {
-        stage('Initialize') {
+        stage('Build') {
             steps {
-                echo "Starting build for ${env.APP_NAME} version ${env.VERSION}"
-                sh 'mvn --version' // Verifies Maven was installed by Jenkins
+                echo 'Building the application...'
+            }
+        }
+        stage('Test') {
+            when {
+                expression { return params.RUN_TESTS }
+            }
+            steps {
+                echo 'Tests are running because the box was checked!'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying the application...'
             }
         }
     }
